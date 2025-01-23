@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qalick - Digital Marketing Chatbot</title>
+  <style>
+    /* General Styles */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: #1e1e2f;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Chat Container */
+    .chat-container {
+      display: flex;
+      width: 100%;
+      height: 100vh;
+      background-color: #2a2a40;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Sidebar with Gradient */
+    .sidebar {
+      width: 250px;
+      background: linear-gradient(135deg, #2a2a40, #1e1e2f, #3498db);
+      color: #fff;
+      padding: 20px;
+      overflow-y: auto;
+      border-right: 1px solid #34344a;
+    }
+
+    .sidebar-header {
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sidebar-header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .new-chat-button {
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .new-chat-button:hover {
+      background-color: #2980b9;
+    }
+
+    .chat-history {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .chat-history div {
+      background-color: #34344a;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .chat-history div:hover {
+      background-color: #3d3d5c;
+      transform: translateX(5px);
+    }
+
+    .clear-chat-button {
+      background-color: #e74c3c;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      margin-top: 10px;
+      transition: background-color 0.3s ease;
+    }
+
+    .clear-chat-button:hover {
+      background-color: #c0392b;
+    }
+
+    /* Main Chat Area */
+    .main-chat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Modern Minimal Header */
+    .chat-header {
+      background: linear-gradient(135deg, #3498db, #8e44ad);
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      position: relative;
+    }
+
+    .chat-header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #ffffff, #e0e0e0);
+      background-clip: text; /* Standard property */
+      -webkit-background-clip: text; /* Vendor-prefixed for older browsers */
+      color: transparent; /* Fallback for browsers that don't support background-clip */
+    }
+
+    /* Chat Messages with Subtle Depth Effect */
+    .chat-messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background-color: #2a2a40;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .message {
+      margin-bottom: 15px;
+      max-width: 70%;
+      padding: 15px;
+      border-radius: 10px;
+      position: relative;
+      animation: fadeIn 0.3s ease;
+      background-color: #3d3d5c;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .user-message {
+      background-color: #3498db;
+      color: #fff;
+      margin-left: auto;
+    }
+
+    .bot-message {
+      background-color: #3d3d5c;
+      color: #fff;
+      margin-right: auto;
+    }
+
+    /* Chat Input */
+    .chat-input {
+      display: flex;
+      padding: 10px;
+      background-color: #1e1e2f;
+      border-top: 1px solid #34344a;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #34344a;
+      border-radius: 5px;
+      outline: none;
+      background-color: #2a2a40;
+      color: #fff;
+    }
+
+    .chat-input button {
+      margin-left: 10px;
+      padding: 10px 20px;
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .chat-input button:hover {
+      background-color: #2980b9;
+    }
+
+    /* Copy Button */
+    .copy-button {
+      background-color: #2ecc71;
+      color: #fff;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: background-color 0.3s ease;
+    }
+
+    .copy-button:hover {
+      background-color: #27ae60;
+    }
+
+    /* Well-structured Bot Responses */
+    .bot-message h3 {
+      margin: 0 0 10px 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #3498db;
+    }
+
+    .bot-message ol,
+    .bot-message ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+
+    .bot-message ol li,
+    .bot-message ul li {
+      margin-bottom: 5px;
+    }
+
+    .bot-message p {
+      margin: 10px 0;
+      line-height: 1.6;
+    }
+
+    /* Copy Button in Header */
+    .message-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .message-header .copy-button {
+      background-color: #2ecc71;
+      color: #fff;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .message-header .copy-button:hover {
+      background-color: #27ae60;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <!-- Sidebar for previous chats -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h2>Chats</h2>
+        <button class="new-chat-button" id="new-chat-button">New Chat</button>
+      </div>
+      <div class="chat-history" id="chat-history">
+        <!-- Previous chats will be dynamically added here -->
+      </div>
+      <button class="clear-chat-button" id="clear-chat-button">Clear Chats</button>
+    </div>
+
+    <!-- Main chat area -->
+    <div class="main-chat">
+      <div class="chat-header">
+        <h1>Qalick Digital Marketing</h1>
+      </div>
+      <div class="chat-messages" id="chat-messages">
+        <!-- Greeting message -->
+        <div class="message bot-message">
+          <div class="message-header">
+            <h3>Welcome to Qalick!</h3>
+            <button class="copy-button" onclick="copyMessage(this)">Copy</button>
+          </div>
+          <p>Hello! I'm Qalick, your digital marketing assistant. How can I help you today?</p>
+        </div>
+      </div>
+      <div class="chat-input">
+        <input type="text" id="user-input" placeholder="Type your message...">
+        <button id="send-button">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const chatMessages = document.getElementById("chat-messages");
+      const userInput = document.getElementById("user-input");
+      const sendButton = document.getElementById("send-button");
+      const chatHistory = document.getElementById("chat-history");
+      const newChatButton = document.getElementById("new-chat-button");
+      const clearChatButton = document.getElementById("clear-chat-button");
+
+      // Generate a unique session ID for the user
+      let sessionId = crypto.randomUUID();
+
+      // Connect to the SocketIO server
+      const socket = io();
+
+      // Debug: Log SocketIO connection status
+      socket.on("connect", () => {
+        console.log("Connected to SocketIO server");
+      });
+
+      socket.on("disconnect", () => {
+        console.log("Disconnected from SocketIO server");
+      });
+
+      // Function to parse and format the API response
+      function formatBotResponse(message) {
+        let formattedMessage = message;
+
+        // Convert **text** to <h3> headings
+        formattedMessage = formattedMessage.replace(/\*\*(.*?)\*\*/g, "<h3>$1</h3>");
+
+        // Convert numbered lists to <ol>
+        formattedMessage = formattedMessage.replace(/(\d+\.\s.*?)(\n|$)/g, "<li>$1</li>");
+        formattedMessage = formattedMessage.replace(/<li>(.*?)<\/li>/g, "<ol><li>$1</li></ol>");
+
+        // Convert * text to <ul> lists
+        formattedMessage = formattedMessage.replace(/\*\s(.*?)(\n|$)/g, "<li>$1</li>");
+        formattedMessage = formattedMessage.replace(/<li>(.*?)<\/li>/g, "<ul><li>$1</li></ul>");
+
+        // Add spacing between paragraphs
+        formattedMessage = formattedMessage.replace(/\n/g, "<br>");
+
+        return formattedMessage;
+      }
+
+      // Function to add a message to the chat
+      function addMessage(role, message) {
+        const messageDiv = document.createElement("div");
+        messageDiv.classList.add("message", `${role}-message`);
+
+        // Format bot responses
+        if (role === "bot") {
+          const formattedMessage = formatBotResponse(message);
+          messageDiv.innerHTML = `
+            <div class="message-header">
+              <h3>Qalick</h3>
+              <button class="copy-button" onclick="copyMessage(this)">Copy</button>
+            </div>
+            ${formattedMessage}
+          `;
+        } else {
+          messageDiv.innerHTML = `<p>${message}</p>`;
+        }
+
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      // Function to copy the message
+      function copyMessage(button) {
+        const messageDiv = button.closest(".message");
+        const messageText = messageDiv.innerText;
+        navigator.clipboard.writeText(messageText);
+        alert("Copied to clipboard!");
+      }
+
+      // Function to add a chat to the sidebar
+      function addChatToHistory(message) {
+        const chatDiv = document.createElement("div");
+        chatDiv.textContent = message;
+        chatDiv.addEventListener("click", () => {
+          // Load the selected chat
+          chatMessages.innerHTML = `<div class="message bot-message">
+            <p>Hello! I'm Qalick, your digital marketing assistant. How can I help you today?</p>
+          </div>`;
+          addMessage("user", message);
+        });
+        chatHistory.insertBefore(chatDiv, chatHistory.firstChild); // Add new chat at the top
+      }
+
+      // Function to clear all chats
+      function clearChatHistory() {
+        chatHistory.innerHTML = "";
+        chatMessages.innerHTML = `<div class="message bot-message">
+          <p>Hello! I'm Qalick, your digital marketing assistant. How can I help you today?</p>
+        </div>`;
+      }
+
+      // Send button click event
+      sendButton.addEventListener("click", function () {
+        const userMessage = userInput.value.trim();
+        if (userMessage) {
+          addMessage("user", userMessage);
+          addChatToHistory(userMessage);
+          userInput.value = "";
+
+          // Debug: Log outgoing messages to the backend
+          console.log("Sending message to backend:", userMessage);
+          socket.emit("send_message", { message: userMessage, session_id: sessionId });
+        }
+      });
+
+      // Enter key event for input
+      userInput.addEventListener("keypress", function (e) {
+        if (e.key === "Enter") {
+          sendButton.click();
+        }
+      });
+
+      // Debug: Log incoming messages from the backend
+      socket.on("receive_message", function (data) {
+        console.log("Received message from backend:", data);
+        const botMessage = data.message;
+        if (botMessage) {
+          addMessage("bot", botMessage);
+        } else {
+          console.error("Received empty response from backend");
+        }
+      });
+
+      // New chat button click event
+      newChatButton.addEventListener("click", function () {
+        // Generate a new session ID for a new chat
+        sessionId = crypto.randomUUID();
+        clearChatHistory();
+      });
+
+      // Clear chat button click event
+      clearChatButton.addEventListener("click", function () {
+        clearChatHistory();
+      });
+    });
+  </script>
+</body>
+</html>
